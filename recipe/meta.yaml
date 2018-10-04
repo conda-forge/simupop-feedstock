@@ -1,30 +1,30 @@
-{% set name = "simuPOP" %}
 {% set version = "1.1.8.3" %}
-{% set md5 = "677d2677b0c10bee1e9f62cb6a85969e" %}
 
 package:
-  name: {{ name|lower }}
+  name: simupop
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  md5: {{ md5 }}
+  url: https://pypi.io/packages/source/s/simuPOP/simuPOP-{{ version }}.tar.gz
+  sha256: 85048965ab6f1515deacf824d9a23d5549deb481a3ab33c02ccc6ef1c4dbe1f3
 
 build:
-  skip: True  # [py27]
   number: 1000
-  script: python setup.py install --single-version-externally-managed --record record.txt
+  skip: True  # [py27]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
     - python
-    - setuptools
-    - zlib 1.2.*
+    - pip
+    - zlib
     - swig
   run:
     - python
-    - zlib 1.2.*
+    - zlib
 
 test:
   imports:
@@ -39,12 +39,12 @@ about:
   summary: 'A general-purpose forward-time population genetics simulation environment'
   description: |
     simuPOP is a forward-time population genetics simulation environment. The
-    core of simuPOP is a scripting language (Python) that provides a large 
+    core of simuPOP is a scripting language (Python) that provides a large
     number of objects and functions to manipulate populations, and a mechanism
     to evolve populations forward in time. Using this R/Splus-like environment,
     users can create, manipulate and evolve populations interactively, or write
     a script and run it as a batch file. Owing to its flexible and extensible design,
-    simuPOP can simulate large and complex evolutionary processes with ease. At 
+    simuPOP can simulate large and complex evolutionary processes with ease. At
     a more user-friendly level, simuPOP provides an increasing number of built-in
     scripts that perform simulations ranging from implementation of basic population
     genetics models to generating datasets under complex evolutionary scenarios.
