@@ -1,4 +1,4 @@
-{% set version = "1.1.8.3" %}
+{% set version = "1.1.9" %}
 
 package:
   name: simupop
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/simuPOP/simuPOP-{{ version }}.tar.gz
-  sha256: 85048965ab6f1515deacf824d9a23d5549deb481a3ab33c02ccc6ef1c4dbe1f3
+  sha256: c594b7470f0119f18dfd5946ec5d1527a5cd186d22aca9be90236d28d0440823
 
 build:
   number: 1000
