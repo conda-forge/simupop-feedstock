@@ -1,6 +1,6 @@
 {% set name = "simuPOP" %}
-{% set version = "1.1.8.3" %}
-{% set md5 = "677d2677b0c10bee1e9f62cb6a85969e" %}
+{% set version = "1.1.10" %}
+{% set md5 = "50b13c131555e2ac57bf1f25b554a2dd" %}
 
 package:
   name: {{ name|lower }}
