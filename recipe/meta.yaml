@@ -20,12 +20,15 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - zlib 1.2.*
     - swig
   host:
     - python
     - setuptools
     - pip
+    - zlib
+  run:
+    - python
+    - zlib
 
 test:
   imports:
