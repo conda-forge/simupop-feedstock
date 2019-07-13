@@ -14,18 +14,18 @@ source:
 build:
   skip: True  # [py27]
   number: 0
-  script: python setup.py install --single-version-externally-managed --record record.txt
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - zlib 1.2.*
+    - swig
   host:
     - python
     - setuptools
     - pip
-    - zlib 1.2.*
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - swig
 
 test:
   imports:
