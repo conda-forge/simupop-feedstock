@@ -1,6 +1,6 @@
 {% set name = "simuPOP" %}
-{% set version = "1.1.10.8" %}
-{% set md5 = "31add77b237ea35b2cc5561b8aee83cf" %}
+{% set version = "1.1.10.9" %}
+{% set md5 = "8238fe1a25d3a0362b48729448322ac2" %}
 
 package:
   name: {{ name|lower }}
@@ -20,12 +20,15 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - zlib 1.2.*
     - swig
   host:
     - python
     - setuptools
     - pip
+    - zlib
+  run:
+    - python
+    - zlib
 
 test:
   imports:
