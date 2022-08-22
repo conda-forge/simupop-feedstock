@@ -11,6 +11,9 @@ source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   md5: {{ md5 }}
 
+patches:
+  - compiler.patch
+  
 build:
   skip: True  # [py27]
   number: 0
