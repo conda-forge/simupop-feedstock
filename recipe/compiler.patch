@@ -1,0 +1,25 @@
+diff --git a/setup.py b/setup.py
+index 18090d32..6b2f5c93 100755
+--- a/setup.py
++++ b/setup.py
+@@ -525,6 +525,7 @@ def try_compile(body='', ext='.cpp'):
+             oldstderr = os.dup(sys.stderr.fileno())
+             os.dup2(devnull.fileno(), sys.stderr.fileno())
+             cc = new_compiler()
++            distutils.sysconfig.customize_compiler(cc)
+             objects = cc.compile([fname], output_dir=tmpdir)
+         except:
+             return False
+@@ -640,6 +641,7 @@ if __name__ == '__main__':
+             # try to get
+             print('Building static libraries')
+             c = new_compiler(verbose=1)
++            distutils.sysconfig.customize_compiler(c)
+             # -w suppress all warnings caused by the use of boost libraries
+             objects = c.compile(LIB_FILES,
+                 include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
+@@ -766,6 +768,3 @@ if __name__ == '__main__':
+         cmdclass = {'build_py': build_py},
+         **setup_params
+     )
+ 
