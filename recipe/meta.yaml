@@ -1,6 +1,6 @@
 {% set name = "simuPOP" %}
-{% set version = "1.1.10.9" %}
-{% set md5 = "8238fe1a25d3a0362b48729448322ac2" %}
+{% set version = "1.1.12" %}
+{% set md5 = "91d6dde67210738d8956529b20d23be4" %}
 
 package:
   name: {{ name|lower }}
@@ -12,9 +12,9 @@ source:
   md5: {{ md5 }}
 
 build:
-  skip: True  # [py27]
+  skip: True  # [py>=37]
   number: 1
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  script: {{ PYTHON }} setup.py install --single-version-externally-managed --record record.txt
 
 requirements:
   build:
@@ -24,11 +24,11 @@ requirements:
   host:
     - python
     - setuptools
+    - zlib 1.2.*
     - pip
-    - zlib
   run:
     - python
-    - zlib
+    - zlib 1.2.*
 
 test:
   imports:
@@ -37,7 +37,7 @@ test:
 
 about:
   home: http://github.com/BoPeng/simuPOP
-  license: GPL3
+  license: GPL-3.0-or-later
   license_family: GPL
   license_file: COPYING
   summary: 'A general-purpose forward-time population genetics simulation environment'
@@ -52,7 +52,7 @@ about:
     a more user-friendly level, simuPOP provides an increasing number of built-in
     scripts that perform simulations ranging from implementation of basic population
     genetics models to generating datasets under complex evolutionary scenarios.
-  doc_url: http://simuPOP.sourceforge.net/Main/Documentation
+  doc_url: http://bopeng.github.io/simuPOP/
   dev_url: https://github.com/BoPeng/simuPOP
 
 extra:
