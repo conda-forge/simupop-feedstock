@@ -1,6 +1,6 @@
 {% set name = "simuPOP" %}
-{% set version = "1.1.12" %}
-{% set md5 = "91d6dde67210738d8956529b20d23be4" %}
+{% set version = "1.1.10.9" %}
+{% set md5 = "8238fe1a25d3a0362b48729448322ac2" %}
 
 package:
   name: {{ name|lower }}
@@ -52,7 +52,7 @@ about:
     a more user-friendly level, simuPOP provides an increasing number of built-in
     scripts that perform simulations ranging from implementation of basic population
     genetics models to generating datasets under complex evolutionary scenarios.
-  doc_url: http://bopeng.github.io/simuPOP/
+  doc_url: http://simuPOP.sourceforge.net/Main/Documentation
   dev_url: https://github.com/BoPeng/simuPOP
 
 extra:
