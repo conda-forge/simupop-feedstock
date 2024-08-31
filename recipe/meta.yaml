@@ -1,6 +1,6 @@
 {% set name = "simuPOP" %}
-{% set version = "1.1.10.9" %}
-{% set md5 = "8238fe1a25d3a0362b48729448322ac2" %}
+{% set version = "1.1.15" %}
+{% set md5 = "57e22809530bd6dc3a2390c2a39ebfa6" %}
 
 package:
   name: {{ name|lower }}
@@ -12,13 +12,14 @@ source:
   md5: {{ md5 }}
 
 build:
-  skip: True  # [py27]
-  number: 1
+  skip: true  # [py27]
+  number: 0
   script: "{{ PYTHON }} -m pip install . --no-deps -vv"
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
     - swig
   host:
