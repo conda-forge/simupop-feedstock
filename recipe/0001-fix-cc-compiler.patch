@@ -37,7 +37,7 @@ index 3e52a961..2a1da149 100755
              objects = c.compile(LIB_FILES,
                  include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
 diff --git a/src/utility.h b/src/utility.h
-index 6769ae26..04c3974a 100644
+index 6769ae26..eb256933 100644
 --- a/src/utility.h
 +++ b/src/utility.h
 @@ -1775,13 +1775,31 @@ void closeOutput(const string & output = string());
@@ -53,12 +53,12 @@ index 6769ae26..04c3974a 100644
  
 +	// somehow these functions needs to be static (callable from class), so
 +	/// in theory we cannot use any RNG with max() value not 0xffffffffUL
-+	static result_type min()
++	constexpr result_type min()
 +	{
 +		return 0;
 +	}
 +
-+	static result_type max()
++	constexpr result_type max()
 +	{
 +		return 0xffffffffUL - 1;
 +	}
