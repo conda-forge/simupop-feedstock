@@ -37,7 +37,7 @@ index 3e52a961..2a1da149 100755
              objects = c.compile(LIB_FILES,
                  include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
 diff --git a/src/utility.h b/src/utility.h
-index 6769ae26..995be02d 100644
+index 6769ae26..e0a8081b 100644
 --- a/src/utility.h
 +++ b/src/utility.h
 @@ -1775,13 +1775,29 @@ void closeOutput(const string & output = string());
@@ -53,17 +53,17 @@ index 6769ae26..995be02d 100644
  
 +	result_type min()
 +	{
-+		return gsl_rng_min();
++		return gsl_rng_min(m_RNG);
 +	}
 +
 +	result_type max()
 +	{
-+		return gsl_rng_max() - 1;
++		return gsl_rng_max(m_RNG) - 1;
 +	}
 +
 +	result_type operator()() const
 +	{
-+		return gsl_rng_uniform_int(m_RNG, gsl_rng_max());
++		return gsl_rng_uniform_int(m_RNG, gsl_rng_max(m_RNG));
 +	}
  
 -	unsigned long int operator()(unsigned long int N) const
