@@ -14,9 +14,8 @@ source:
 build:
   skip: true  # [py27]
   number: 0
-  script_env:
-    - DBOOST_NO_CXX98_FUNCTION_BASE
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  script: "BOOST_NO_CXX98_FUNCTION_BASE=1 {{ PYTHON }} -m pip install . --no-deps -vv"   [osx]
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"   [not osx]
 
 requirements:
   build:
