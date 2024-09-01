@@ -36,6 +36,18 @@ index 3e52a961..2a1da149 100755
              # -w suppress all warnings caused by the use of boost libraries
              objects = c.compile(LIB_FILES,
                  include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
+diff --git a/src/stator.h b/src/stator.h
+index 0ac0640e..c26d6ff8 100644
+--- a/src/stator.h
++++ b/src/stator.h
+@@ -37,7 +37,6 @@
+ #include <numeric>
+ using std::string;
+ using std::count_if;
+-using std::bind2nd;
+ using std::equal;
+ using std::greater;
+ using std::min;
 diff --git a/src/utility.h b/src/utility.h
 index 6769ae26..f44b33a4 100644
 --- a/src/utility.h
