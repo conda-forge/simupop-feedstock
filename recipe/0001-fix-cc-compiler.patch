@@ -1,0 +1,285 @@
+diff --git a/INSTALL b/INSTALL
+index bb2a59b5..f4c9c6b8 100644
+--- a/INSTALL
++++ b/INSTALL
+@@ -15,7 +15,8 @@ conda install -c conda-forge simuPOP
+ ### Compile from source
+ 
+ If you are working with a development version of simuPOP or an unsupported platform, you may need to install simuPOP from source.
+-Generally speaking, you will need a C/C++ compiler and zlib.
++
++Generally speaking, you will need a recent C/C++ compiler that supports the `c++17` standard and zlib.
+ 
+ #### Checkout the simuPOP source code
+ 
+@@ -23,7 +24,15 @@ Using any git client, checkout simuPOP from https://github.com/BoPeng/simuPOP.
+ 
+ #### Linux
+ 
+-Linux systems generally have gcc installed. To compile simuPOP from source, just run
++Linux systems generally have gcc installed. To compile simuPOP from source, you need to
++
++first install libz and zlib.h
++```
++sudo apt-get install zlib1g
++conda install -c conda-forge zlib
++```
++
++then run
+ 
+ ```
+ python setup.py install
+diff --git a/README.md b/README.md
+index d07a8b84..d2cf9138 100644
+--- a/README.md
++++ b/README.md
+@@ -28,6 +28,9 @@ The user guide and reference manual of simuPOP is available at http://bopeng.git
+ 
+ ## Change Log since 1.1.7
+ 
++### simuPOP 1.1.16
++* [#103](https://github.com/BoPeng/simuPOP/issues/103) Fix compatibility with recent compilers with c++17 support, and fix conda-forge release.
++
+ ### simuPOP 1.1.15
+ * [#122](https://github.com/BoPeng/simuPOP/issues/122) Fix compatibility with Visual Studio 2022 under windows.
+ 
+diff --git a/setup.py b/setup.py
+index 3e52a961..54028463 100755
+--- a/setup.py
++++ b/setup.py
+@@ -79,7 +79,7 @@ else:
+     fin, fout, ferr = (p.stdin, p.stdout, p.stderr)
+     output = ferr.readlines()[-1].decode('utf8')
+     try:
+-        version = re.match('.*gcc version\s*(\d+).(\d+).(\d+).*', output).groups()
++        version = re.match(r'.*gcc version\s*(\d+).(\d+).(\d+).*', output).groups()
+         if int(version[0]) < 4 or int(version[1]) < 2:
+             print('Support for openMP is turned off because version %s.%s.%s of gcc does not support this feature' % version)
+             USE_OPENMP = False
+@@ -402,6 +402,8 @@ if not os.path.isdir('build'):
+ 
+ COMMON_MACROS = [
+     ('BOOST_UBLAS_NDEBUG', None),
++    ('BOOST_NO_CXX98_FUNCTION_BASE', None),
++    ('BOOST_COMPUTE_USE_CPP11', None),
+     ('_HAS_ITERATOR_DEBUGGING', 0),
+     ('BOOST_ALL_NO_LIB', None),
+     ('NO_ZLIB', 0),
+@@ -470,6 +472,20 @@ common_library_dirs = ['build']
+ common_extra_link_args = []
+ common_extra_include_dirs = []
+ 
++# for conda environment under all systems
++if 'CONDA_PREFIX' in os.environ:
++    common_extra_include_dirs.append(os.path.join(os.environ['CONDA_PREFIX'], 'include'))
++    common_library_dirs.append(os.path.join(os.environ['CONDA_PREFIX'], 'lib'))
++
++for conda_var in ('CONDA_PREFIX', 'CONDA_PREFIX_1'):
++    if conda_var in os.environ:
++        conda_lib = os.path.join(os.environ[conda_var], 'Library')
++        if os.path.isdir(conda_lib):
++            if os.path.join(conda_lib, 'include') not in common_extra_include_dirs:
++                common_extra_include_dirs.append(os.path.join(conda_lib, 'include'))
++            if os.path.join(conda_lib, 'lib') not in common_library_dirs:
++                common_library_dirs.append(os.path.join(conda_lib, 'lib'))
++
+ if os.name == 'nt':
+     #common_library_dirs.append('development/win32')
+     if 'LOCALAPPDATA' in os.environ:
+@@ -477,12 +493,6 @@ if os.name == 'nt':
+         if os.path.isdir(conda_lib):
+             common_extra_include_dirs.append(os.path.join(conda_lib, 'include'))
+             common_library_dirs.append(os.path.join(conda_lib, 'lib'))
+-    for conda_var in ('CONDA_PREFIX', 'CONDA_PREFIX_1'):
+-        if conda_var in os.environ:
+-            conda_lib = os.path.join(os.environ[conda_var], 'Library')
+-            if os.path.isdir(conda_lib):
+-                common_extra_include_dirs.append(os.path.join(conda_lib, 'include'))
+-                common_library_dirs.append(os.path.join(conda_lib, 'lib'))
+ 
+     # msvc does not have O3 option, /GR is to fix a C4541 warning
+ 
+@@ -491,6 +501,7 @@ if os.name == 'nt':
+     # /wd4996 disables warning messages for unsafe function call in boost/serialization
+     # /wd4068 disables warning messages for unknown pragma set by gcc
+     common_extra_compile_args = ['/O2', '/GR', '/EHsc', '/wd4819', '/wd4996', '/wd4068']
++    common_cpp_extra_compile_args = ['/std:c++17']
+     # Enable openMP if USE_OPENMP = True
+     if USE_OPENMP:
+         if USE_ICC:
+@@ -498,14 +509,13 @@ if os.name == 'nt':
+         else:
+             common_extra_compile_args.append('/openmp')
+ else:
+-    if 'CONDA_PREFIX' in os.environ:
+-        common_extra_include_dirs.append(os.environ['CONDA_PREFIX'] + '/include')
+-        common_library_dirs.append(os.environ['CONDA_PREFIX'] + 'lib')
+     common_extra_compile_args = ['-O3', '-Wall', '-Wno-unknown-pragmas', '-Wno-unused-parameter']
++    common_cpp_extra_compile_args = []
+     if is_maverick():
+         #common_extra_link_args.append('-stdlib=libstdc++')
+         #common_extra_include_dirs.append('/usr/include/c++/4.2.1')
+         common_extra_compile_args.append('-Wno-error=unused-command-line-argument')
++        common_cpp_extra_compile_args.append('-std=c++17')
+     if not USE_ICC:   # for gcc, turn on extra warning message
+         common_extra_compile_args.append('-Wextra')
+     if USE_OPENMP:
+@@ -535,6 +545,7 @@ def try_compile(body='', ext='.cpp'):
+             oldstderr = os.dup(sys.stderr.fileno())
+             os.dup2(devnull.fileno(), sys.stderr.fileno())
+             cc = new_compiler()
++            distutils.sysconfig.customize_compiler(cc)
+             objects = cc.compile([fname], output_dir=tmpdir)
+         except:
+             return False
+@@ -650,6 +661,7 @@ if __name__ == '__main__':
+             # try to get
+             print('Building static libraries')
+             c = new_compiler(verbose=1)
++            distutils.sysconfig.customize_compiler(c)
+             # -w suppress all warnings caused by the use of boost libraries
+             objects = c.compile(LIB_FILES,
+                 include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
+@@ -722,7 +734,7 @@ if __name__ == '__main__':
+         EXT_MODULES.append(
+             Extension('simuPOP._simuPOP_%s' % modu,
+                 sources = info['src'],
+-                extra_compile_args = common_extra_compile_args,
++                extra_compile_args = common_extra_compile_args + common_cpp_extra_compile_args,
+                 include_dirs = info['include_dirs'] + ['src', 'build'],
+                 library_dirs = common_library_dirs,
+                 libraries = info['libraries'],
+diff --git a/src/customizedTemplates.cpp b/src/customizedTemplates.cpp
+index 2598be31..6eccfce8 100644
+--- a/src/customizedTemplates.cpp
++++ b/src/customizedTemplates.cpp
+@@ -63,7 +63,7 @@ template <typename T>
+ PyObject *
+ getarrayitem_template(struct arrayobject_template<T> * op, Py_ssize_t i)
+ {
+-	register struct arrayobject_template<T> * ap;
++	struct arrayobject_template<T> * ap;
+ 
+ 	assert(is_carrayobject_template<T>(op));
+ 	ap = (struct arrayobject_template<T> *)op;
+@@ -77,7 +77,7 @@ template <>
+ PyObject *
+ getarrayitem_template<GenoIterator>(struct arrayobject_template<GenoIterator> * op, Py_ssize_t i)
+ {
+-	register struct arrayobject_template<GenoIterator> * ap;
++	struct arrayobject_template<GenoIterator> * ap;
+ 
+ 	assert(is_carrayobject_template<GenoIterator>(op));
+ 	ap = (struct arrayobject_template<GenoIterator> *)op;
+@@ -746,7 +746,7 @@ template <typename T>
+ PyObject *
+ getarrayitem_template(PyObject * op, Py_ssize_t i)
+ {
+-	register struct arrayobject_template<T> * ap;
++	struct arrayobject_template<T> * ap;
+ 
+ 	assert(is_carrayobject_template<T>(op));
+ 	ap = (struct arrayobject_template<T> *)op;
+@@ -1485,7 +1485,7 @@ template <>
+ PyObject *
+ getarrayitem_template<GenoIterator>(PyObject * op, Py_ssize_t i)
+ {
+-	register struct arrayobject_template<GenoIterator> * ap;
++	struct arrayobject_template<GenoIterator> * ap;
+ 
+ 	assert(is_carrayobject_template<GenoIterator>(op));
+ 	ap = (struct arrayobject_template<GenoIterator> *)op;
+diff --git a/src/simuPOP_cfg.h b/src/simuPOP_cfg.h
+index 585fd6eb..78417ab0 100644
+--- a/src/simuPOP_cfg.h
++++ b/src/simuPOP_cfg.h
+@@ -213,7 +213,8 @@ typedef const unsigned char & ConstAlleleRef;
+ 
+ // max allowed allele state
+ extern const unsigned long ModuleMaxAllele;
+-extern const unsigned long MaxRandomNumber;
++// extern const unsigned long MaxRandomNumber;
++inline constexpr unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
+ 
+ #define PopSWIGType "simuPOP::Population *"
+ #define IndSWIGType "simuPOP::Individual *"
+diff --git a/src/stator.h b/src/stator.h
+index 0ac0640e..c26d6ff8 100644
+--- a/src/stator.h
++++ b/src/stator.h
+@@ -37,7 +37,6 @@
+ #include <numeric>
+ using std::string;
+ using std::count_if;
+-using std::bind2nd;
+ using std::equal;
+ using std::greater;
+ using std::min;
+diff --git a/src/utility.cpp b/src/utility.cpp
+index 3db6e766..17e9cd2a 100644
+--- a/src/utility.cpp
++++ b/src/utility.cpp
+@@ -149,7 +149,6 @@ using std::greater;
+ const Allele simuPOP::vectorm::zero_ = 0;
+ #endif
+ const unsigned long ModuleMaxAllele = std::numeric_limits<Allele>::max();
+-const unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
+ const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
+ const size_t InvalidValue = ~size_t(0);
+ const size_t MaxIndexSize = std::numeric_limits<size_t>::max();
+diff --git a/src/utility.h b/src/utility.h
+index 6769ae26..3aa5bbeb 100644
+--- a/src/utility.h
++++ b/src/utility.h
+@@ -1775,13 +1775,37 @@ void closeOutput(const string & output = string());
+ class RNG_func
+ {
+ public:
++	typedef unsigned long int result_type;
++
+ 	RNG_func(gsl_rng * rng) : m_RNG(rng)
+ 	{
+ 
+ 	}
+ 
+ 
+-	unsigned long int operator()(unsigned long int N) const
++#ifdef BOOST_COMPUTE_USE_CPP11
++	// somehow these functions needs to be static (callable from class), so
++	// min/max cannot change with the underlying m_RNG. However, we demand that
++	// RNGs generate full range of int to have a minimal range from 0 to
++	// MaxRandomNumber, so we can set the max to MaxRandomNumber.
++	constexpr static result_type min()
++	{
++		return 0;
++	}
++
++	constexpr static result_type max()
++	{
++		return MaxRandomNumber - 1;
++	}
++
++	result_type operator()()
++	{
++		return gsl_rng_uniform_int(m_RNG, MaxRandomNumber);
++	}
++
++#endif
++
++	result_type operator()(result_type N) const
+ 	{
+ 		return gsl_rng_uniform_int(m_RNG, N);
+ 	}
+@@ -1981,7 +2005,12 @@ public:
+ 		// generator.
+ 		RNG_func rng(m_RNG);
+ 
++#ifdef BOOST_COMPUTE_USE_CPP11
++		std::shuffle(begin, end, rng);
++#else
+ 		std::random_shuffle(begin, end, rng);
++#endif
++
+ 	}
+ 
+ 

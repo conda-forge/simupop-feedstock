@@ -10,13 +10,14 @@ source:
   fn: {{ name }}-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   md5: {{ md5 }}
+  patches:
+    - 0001-fix-cc-compiler.patch
 
 build:
-  skip: true  # [py27]
-  number: 1
-  script_env:
-    - DBOOST_NO_CXX98_FUNCTION_BASE
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  skip: true  # [py2k]
+  number: 0
+  script: "BOOST_NO_CXX98_FUNCTION_BASE=1 {{ PYTHON }} -m pip install . --no-deps -vv"  # [osx]
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"   # [not osx]
 
 requirements:
   build:
