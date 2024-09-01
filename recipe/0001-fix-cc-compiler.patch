@@ -76,6 +76,20 @@ index 2598be31..6eccfce8 100644
  
  	assert(is_carrayobject_template<GenoIterator>(op));
  	ap = (struct arrayobject_template<GenoIterator> *)op;
+diff --git a/src/simuPOP_cfg.h b/src/simuPOP_cfg.h
+index 585fd6eb..78417ab0 100644
+--- a/src/simuPOP_cfg.h
++++ b/src/simuPOP_cfg.h
+@@ -213,7 +213,8 @@ typedef const unsigned char & ConstAlleleRef;
+ 
+ // max allowed allele state
+ extern const unsigned long ModuleMaxAllele;
+-extern const unsigned long MaxRandomNumber;
++// extern const unsigned long MaxRandomNumber;
++inline constexpr unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
+ 
+ #define PopSWIGType "simuPOP::Population *"
+ #define IndSWIGType "simuPOP::Individual *"
 diff --git a/src/stator.h b/src/stator.h
 index 0ac0640e..c26d6ff8 100644
 --- a/src/stator.h
@@ -88,6 +102,18 @@ index 0ac0640e..c26d6ff8 100644
  using std::equal;
  using std::greater;
  using std::min;
+diff --git a/src/utility.cpp b/src/utility.cpp
+index 3db6e766..17e9cd2a 100644
+--- a/src/utility.cpp
++++ b/src/utility.cpp
+@@ -149,7 +149,6 @@ using std::greater;
+ const Allele simuPOP::vectorm::zero_ = 0;
+ #endif
+ const unsigned long ModuleMaxAllele = std::numeric_limits<Allele>::max();
+-const unsigned long MaxRandomNumber = std::numeric_limits<int32_t>::max();
+ const unsigned char MaxTraitIndex = std::numeric_limits<TraitIndexType>::max();
+ const size_t InvalidValue = ~size_t(0);
+ const size_t MaxIndexSize = std::numeric_limits<size_t>::max();
 diff --git a/src/utility.h b/src/utility.h
 index 6769ae26..3aa5bbeb 100644
 --- a/src/utility.h
