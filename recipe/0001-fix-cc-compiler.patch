@@ -35,3 +35,20 @@ index 3e52a961..0cdca2b0 100755
              # -w suppress all warnings caused by the use of boost libraries
              objects = c.compile(LIB_FILES,
                  include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
+diff --git a/src/utility.h b/src/utility.h
+index 6769ae26..97767a2b 100644
+--- a/src/utility.h
++++ b/src/utility.h
+@@ -1981,7 +1981,12 @@ public:
+ 		// generator.
+ 		RNG_func rng(m_RNG);
+ 
++#ifdef BOOST_COMPUTE_USE_CPP11
++		std::shuffle(begin, end, rng);
++#else
+ 		std::random_shuffle(begin, end, rng);
++#endif
++
+ 	}
+ 
+ 
