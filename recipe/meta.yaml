@@ -13,7 +13,7 @@ source:
 
 build:
   skip: true  # [py27]
-  number: 0
+  number: 1
   script_env:
     - DBOOST_NO_CXX98_FUNCTION_BASE
   script: "{{ PYTHON }} -m pip install . --no-deps -vv"
