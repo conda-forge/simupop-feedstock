@@ -37,10 +37,10 @@ index 3e52a961..2a1da149 100755
              objects = c.compile(LIB_FILES,
                  include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
 diff --git a/src/utility.h b/src/utility.h
-index 6769ae26..eb256933 100644
+index 6769ae26..f44b33a4 100644
 --- a/src/utility.h
 +++ b/src/utility.h
-@@ -1775,13 +1775,31 @@ void closeOutput(const string & output = string());
+@@ -1775,13 +1775,34 @@ void closeOutput(const string & output = string());
  class RNG_func
  {
  public:
@@ -51,14 +51,15 @@ index 6769ae26..eb256933 100644
  
  	}
  
++#ifdef BOOST_COMPUTE_USE_CPP11
 +	// somehow these functions needs to be static (callable from class), so
 +	/// in theory we cannot use any RNG with max() value not 0xffffffffUL
-+	constexpr result_type min()
++	constexpr static result_type min()
 +	{
 +		return 0;
 +	}
 +
-+	constexpr result_type max()
++	constexpr static result_type max()
 +	{
 +		return 0xffffffffUL - 1;
 +	}
@@ -67,13 +68,15 @@ index 6769ae26..eb256933 100644
 +	{
 +		return gsl_rng_uniform_int(m_RNG, 0xffffffffUL);
 +	}
++
++#endif
  
 -	unsigned long int operator()(unsigned long int N) const
 +	result_type operator()(result_type N) const
  	{
  		return gsl_rng_uniform_int(m_RNG, N);
  	}
-@@ -1981,7 +1999,12 @@ public:
+@@ -1981,7 +2002,12 @@ public:
  		// generator.
  		RNG_func rng(m_RNG);
  
