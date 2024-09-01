@@ -37,10 +37,41 @@ index 3e52a961..2a1da149 100755
              objects = c.compile(LIB_FILES,
                  include_dirs=['gsl', 'gsl/specfunc', 'build', '.', boost_include_dir] + common_extra_include_dirs,
 diff --git a/src/utility.h b/src/utility.h
-index 6769ae26..97767a2b 100644
+index 6769ae26..995be02d 100644
 --- a/src/utility.h
 +++ b/src/utility.h
-@@ -1981,7 +1981,12 @@ public:
+@@ -1775,13 +1775,29 @@ void closeOutput(const string & output = string());
+ class RNG_func
+ {
+ public:
++	typedef unsigned long int result_type;
++
+ 	RNG_func(gsl_rng * rng) : m_RNG(rng)
+ 	{
+ 
+ 	}
+ 
++	result_type min()
++	{
++		return gsl_rng_min();
++	}
++
++	result_type max()
++	{
++		return gsl_rng_max() - 1;
++	}
++
++	result_type operator()() const
++	{
++		return gsl_rng_uniform_int(m_RNG, gsl_rng_max());
++	}
+ 
+-	unsigned long int operator()(unsigned long int N) const
++	result_type operator()(result_type N) const
+ 	{
+ 		return gsl_rng_uniform_int(m_RNG, N);
+ 	}
+@@ -1981,7 +1997,12 @@ public:
  		// generator.
  		RNG_func rng(m_RNG);
  
