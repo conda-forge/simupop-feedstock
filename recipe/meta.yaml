@@ -14,8 +14,7 @@ source:
 build:
   skip: true  # [py2k]
   number: 0
-  script: "BOOST_NO_CXX98_FUNCTION_BASE=1 {{ PYTHON }} -m pip install . --no-deps -vv"  # [osx]
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"  # [not osx]
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
 
 requirements:
   build:
