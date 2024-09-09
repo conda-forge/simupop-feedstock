@@ -1,0 +1,81 @@
+diff --git a/setup.py b/setup.py
+index 54028463..76de35e1 100755
+--- a/setup.py
++++ b/setup.py
+@@ -98,7 +98,7 @@ if distutils.sysconfig.get_config_var('CC') is not None:
+ # versions are not available, and will most likely work just fine.
+ boost_versions = ['1_35_0', '1_36_0', '1_37_0', '1_38_0', '1_39_0', '1_40_0',
+     '1_42_0', '1_43_0', '1_44_0', '1_45_0', '1_46_0', '1_46_1', '1_47_0',
+-    '1_48_0', '1_62_0', '1_72_0', '1_74_0']
++    '1_48_0', '1_62_0', '1_72_0', '1_74_0', '1_86_0']
+ invalid_boost_versions = ['1_41_0', '1_71_0']
+ 
+ included_version = [x for x in boost_versions if os.path.isdir('boost_' + x)]
+diff --git a/src/utility.cpp b/src/utility.cpp
+index 17e9cd2a..002d8704 100644
+--- a/src/utility.cpp
++++ b/src/utility.cpp
+@@ -3178,20 +3178,16 @@ void StreamProvider::closeOstream()
+ 				"Passed function object is invalid");
+ 			string str = dynamic_cast<ostringstream *>(m_filePtr)->str();
+ 			// in swingpyrun.h, the PyString_Check is defined to PyBytes_Check
+-#if PY_VERSION_HEX >= 0x03000000
+ 			PyObject * arglist = NULL;
+ 			PyObject * pyResult = NULL;
+ 			if (m_mode == "b") {
+ 				arglist = Py_BuildValue("(S)", PyBytes_FromString(str.c_str()));
+-				pyResult = PyEval_CallObject(m_func.func(), arglist);
++				pyResult = PyObject_CallObject(m_func.func(), arglist);
+ 			} else {
+ 				arglist = Py_BuildValue("(s)", str.c_str());
+-				pyResult = PyEval_CallObject(m_func.func(), arglist);
++				pyResult = PyObject_CallObject(m_func.func(), arglist);
+ 			}
+-#else
+-			PyObject * arglist = Py_BuildValue("(s)", str.c_str());
+-			PyObject * pyResult = PyEval_CallObject(m_func.func(), arglist);
+-#endif
++
+ 			if (pyResult == NULL) {
+ 				PyErr_Print();
+ 				PyErr_Clear();
+diff --git a/src/utility.h b/src/utility.h
+index 3aa5bbeb..8379460a 100644
+--- a/src/utility.h
++++ b/src/utility.h
+@@ -376,7 +376,7 @@ public:
+ 		va_start(argptr, format);
+ 		PyObject * arglist = Py_VaBuildValue(const_cast<char *>(format), argptr);
+ 		va_end(argptr);
+-		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
++		PyObject * pyResult = PyObject_CallObject(m_func.object(), arglist);
+ 
+ 		Py_XDECREF(arglist);
+ 		if (pyResult == NULL) {
+@@ -394,7 +394,7 @@ public:
+ 	template <typename T>
+ 	T operator()(void converter(PyObject *, T &), PyObject * arglist) const
+ 	{
+-		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
++		PyObject * pyResult = PyObject_CallObject(m_func.object(), arglist);
+ 
+ 		if (pyResult == NULL) {
+ 			PyErr_Print();
+@@ -415,7 +415,7 @@ public:
+ 		va_start(argptr, format);
+ 		PyObject * arglist = Py_VaBuildValue(const_cast<char *>(format), argptr);
+ 		va_end(argptr);
+-		PyObject * pyResult = PyEval_CallObject(m_func.object(), arglist);
++		PyObject * pyResult = PyObject_CallObject(m_func.object(), arglist);
+ 
+ 		Py_XDECREF(arglist);
+ 		if (pyResult == NULL) {
+@@ -429,7 +429,7 @@ public:
+ 
+ 	PyObject * operator()(PyObject * args) const
+ 	{
+-		PyObject * pyResult = PyEval_CallObject(m_func.object(), args);
++		PyObject * pyResult = PyObject_CallObject(m_func.object(), args);
+ 
+ 		if (pyResult == NULL) {
+ 			PyErr_Print();
