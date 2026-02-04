@@ -1,6 +1,6 @@
 {% set name = "simuPOP" %}
-{% set version = "1.1.17" %}
-{% set md5 = "bacdd649bb152eaf07af037bfea3ac8d" %}
+{% set version = "1.1.18" %}
+{% set md5 = "f83aa73fd532815ff9840ab8a1acf1b0" %}
 
 package:
   name: {{ name|lower }}
@@ -8,7 +8,7 @@ package:
 
 source:
   fn: {{ name }}-{{ version }}.tar.gz
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name | lower }}-{{ version }}.tar.gz
   md5: {{ md5 }}
 
 build:
